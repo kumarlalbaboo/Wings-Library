@@ -2,9 +2,12 @@ package com.llb.wingslibrary.repository;
 
 import com.llb.wingslibrary.entity.Fee;
 import com.llb.wingslibrary.entity.FeeStatus;
+import com.llb.wingslibrary.entity.Student;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +24,8 @@ public interface FeeRepository extends JpaRepository<Fee, Long> {
 
     @Query("SELECT COALESCE(SUM(f.amount),0) FROM Fee f WHERE f.status IN ('UNPAID','OVERDUE')")
     Double getTotalPending();
+
+    boolean existsByStudentIdAndMonthAndYear(Long studentId, Integer month, Integer year);
 
     long countByMonthAndYear(Integer month, Integer year);
 

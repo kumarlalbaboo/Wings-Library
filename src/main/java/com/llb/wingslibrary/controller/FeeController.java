@@ -4,6 +4,8 @@ import com.llb.wingslibrary.dto.FeeDashboardResponse;
 import com.llb.wingslibrary.dto.FeeResponse;
 import com.llb.wingslibrary.dto.MonthlyDashboardResponse;
 import com.llb.wingslibrary.entity.Fee;
+import com.llb.wingslibrary.entity.PaymentHistory;
+import com.llb.wingslibrary.repository.PaymentHistoryRepository;
 import com.llb.wingslibrary.service.FeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +17,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/fees")
 @RequiredArgsConstructor
 public class FeeController {
 
-    @Autowired
     private final FeeService feeService;
+
+    private final PaymentHistoryRepository paymentHistoryRepository;
 
     @GetMapping("/dashboard")
     public FeeDashboardResponse getDashboard() {
@@ -35,23 +39,17 @@ public class FeeController {
     }
 
     @GetMapping("/dashboard/monthly")
-    public MonthlyDashboardResponse monthly(
-            @RequestParam Integer month,
-            @RequestParam Integer year) {
+    public MonthlyDashboardResponse monthly(@RequestParam Integer month, @RequestParam Integer year) {
         return feeService.getMonthlyDashboard(month, year);
     }
 
     @GetMapping("/dashboard/yearly")
-    public MonthlyDashboardResponse yearly(
-            @RequestParam Integer year) {
+    public MonthlyDashboardResponse yearly(@RequestParam Integer year) {
         return feeService.getYearlyDashboard(year);
     }
 
     @GetMapping("/student/{studentId}")
-    public Page<FeeResponse> history(
-            @PathVariable Long studentId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public Page<FeeResponse> history(@PathVariable Long studentId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 
         return feeService.getStudentFeeHistory(studentId, page, size);
     }
@@ -66,6 +64,33 @@ public class FeeController {
                         "attachment; filename=fees.csv")
                 .contentType(MediaType.TEXT_PLAIN)
                 .body(data);
+    }
+
+    @GetMapping("/export/excel")
+    public ResponseEntity<byte[]> exportExcel1() throws IOException {
+
+        byte[] data = feeService.exportFeesToExcel();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=fees.xlsx")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(data);
+    }
+
+    @GetMapping("/export/pdf")
+    public ResponseEntity<byte[]> exportPdf() throws Exception {
+
+        byte[] data = feeService.exportFeesToPdf();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=fees.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(data);
+    }
+
+    @GetMapping("/payment-history/{studentId}")
+    public List<PaymentHistory> history(@PathVariable Long studentId) {
+        return paymentHistoryRepository.findByStudentId(studentId);
     }
 
 }

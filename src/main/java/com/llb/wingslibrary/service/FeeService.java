@@ -5,6 +5,7 @@ import com.llb.wingslibrary.dto.FeeResponse;
 import com.llb.wingslibrary.dto.MonthlyDashboardResponse;
 import com.llb.wingslibrary.entity.Fee;
 import org.springframework.data.domain.Page;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
 
@@ -12,7 +13,8 @@ public interface FeeService {
 
     public Fee payFee(Long feeId);
 
-    public void markOverdue();
+    @Scheduled(cron = "0 5 0 * * ?")
+    public void generateMonthlyFees();
 
     FeeDashboardResponse getDashboard();
 
@@ -23,5 +25,9 @@ public interface FeeService {
     Page<FeeResponse> getStudentFeeHistory(Long studentId, int page, int size);
 
     byte[] exportFeesToExcel() throws IOException;
+
+    byte[] exportFeesToExcel1() throws IOException;
+
+    byte[] exportFeesToPdf() throws Exception;
 
 }

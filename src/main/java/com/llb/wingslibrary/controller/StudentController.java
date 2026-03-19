@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.util.List;
+
 import static com.llb.wingslibrary.entity.StudentFileType.ID_PROOF;
 import static com.llb.wingslibrary.entity.StudentFileType.PHOTO;
 
@@ -26,18 +28,13 @@ public class StudentController {
 
     private final StudentService studentService;
 
-    @PostMapping(
-            value = "/addStudent",
-            consumes = "multipart/form-data"
-    )
+    @PostMapping(value = "/addStudent", consumes = "multipart/form-data")
     public ResponseEntity<StudentResponse> createStudent(
-
             @RequestParam String studentCode,
             @RequestParam String name,
             @RequestParam String mobile,
             @RequestParam(required = false) String address,
             @RequestParam Long seatId,
-
             @RequestParam(required = false) MultipartFile photo,
             @RequestParam(required = false) MultipartFile idProof
 
@@ -57,9 +54,7 @@ public class StudentController {
     }
 
     @GetMapping("/{id}/file")
-    public ResponseEntity<StreamingResponseBody> downloadFile(
-            @PathVariable Long id,
-            @RequestParam StudentFileType type) {
+    public ResponseEntity<StreamingResponseBody> downloadFile(@PathVariable Long id, @RequestParam StudentFileType type) {
 
         Student student = studentService.findEntityById(id);
 
@@ -104,9 +99,7 @@ public class StudentController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<StudentResponse>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<Page<StudentResponse>> getAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 
         return ResponseEntity.ok(
                 studentService.getAll(page, size)
@@ -119,9 +112,7 @@ public class StudentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<StudentResponse> update(
-            @PathVariable Long id,
-            @Valid @RequestBody StudentRequest request) {
+    public ResponseEntity<StudentResponse> update(@PathVariable Long id, @Valid @RequestBody StudentRequest request) {
 
         return ResponseEntity.ok(studentService.update(id, request));
     }
@@ -131,4 +122,15 @@ public class StudentController {
         studentService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/search")
+    public List<StudentResponse> search(@RequestParam String name) {
+        return studentService.searchByName(name);
+    }
+
+    @GetMapping("/filter")
+    public List<StudentResponse> filterByFeeStatus(@RequestParam String status) {
+        return studentService.filterByFeeStatus(status);
+    }
+
 }

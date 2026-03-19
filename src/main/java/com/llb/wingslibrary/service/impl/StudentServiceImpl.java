@@ -2,6 +2,7 @@ package com.llb.wingslibrary.service.impl;
 
 import com.llb.wingslibrary.dto.StudentRequest;
 import com.llb.wingslibrary.dto.StudentResponse;
+import com.llb.wingslibrary.entity.FeeStatus;
 import com.llb.wingslibrary.entity.Seat;
 import com.llb.wingslibrary.entity.SeatStatus;
 import com.llb.wingslibrary.entity.Student;
@@ -16,6 +17,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 
 @Service
 @Transactional
@@ -27,9 +31,7 @@ public class StudentServiceImpl implements StudentService {
     private final SeatRepository seatRepository;
 
     @Override
-    public StudentResponse create(StudentRequest request,
-                                  MultipartFile photo,
-                                  MultipartFile idProof) {
+    public StudentResponse create(StudentRequest request, MultipartFile photo, MultipartFile idProof) {
 
         Seat seat = seatRepository
                 .findByIdAndStatus(request.getSeatId(), SeatStatus.AVAILABLE)
@@ -41,6 +43,7 @@ public class StudentServiceImpl implements StudentService {
         student.setName(request.getName());
         student.setMobile(request.getMobile());
         student.setAddress(request.getAddress());
+        student.setAdmissionDate(LocalDateTime.now());
         student.setSeat(seat);
 
         // PHOTO
@@ -194,6 +197,26 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Student not found with id " + id));
+    }
+
+    @Override
+    public List<StudentResponse> searchByName(String name) {
+
+        return studentRepository.findByNameContainingIgnoreCase(name)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @Override
+    public List<StudentResponse> filterByFeeStatus(String status) {
+
+        FeeStatus feeStatus = FeeStatus.valueOf(status);
+
+        return studentRepository.findByFeeStatus(feeStatus)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
 }

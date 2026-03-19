@@ -51,17 +51,19 @@ public class Student {
     @Column(nullable = false)
     private boolean deleted = false;
 
-    private LocalDateTime createdAt;
+    @Column(nullable = false)
+    private LocalDateTime admissionDate;
+
     private LocalDateTime updatedAt;
 
     @PrePersist
     public void prePersist() {
-        createdAt = LocalDateTime.now();
+        admissionDate = LocalDateTime.now();
     }
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Fee> fees = new ArrayList<>();
+    private List<Fee> fees;
 
     @OneToOne
     @JoinColumn(name = "seat_id", unique = true)

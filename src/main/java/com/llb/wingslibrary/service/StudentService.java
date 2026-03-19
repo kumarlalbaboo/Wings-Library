@@ -6,6 +6,8 @@ import com.llb.wingslibrary.entity.Student;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface StudentService {
 
     public StudentResponse create(StudentRequest request,
@@ -21,5 +23,9 @@ public interface StudentService {
     void delete(Long id);
 
     Student findEntityById(Long id);
+
+    List<StudentResponse> searchByName(String name);
+
+    List<StudentResponse> filterByFeeStatus(String status);
 
 }

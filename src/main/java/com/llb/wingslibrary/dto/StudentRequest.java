@@ -3,6 +3,9 @@ package com.llb.wingslibrary.dto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class StudentRequest {
@@ -22,5 +25,8 @@ public class StudentRequest {
 
     @NotNull(message = "Seat ID is required")
     private Long seatId;
+
+    private LocalDateTime admissionDate;
+
 
 }

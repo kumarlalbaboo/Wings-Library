@@ -23,10 +23,7 @@ public class SeatController {
     }
 
     @GetMapping
-    public Page<SeatResponse> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
+    public Page<SeatResponse> getAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return seatService.getAll(page, size);
     }
 
@@ -36,8 +33,7 @@ public class SeatController {
     }
 
     @PutMapping("/{id}")
-    public SeatResponse update(@PathVariable Long id,
-                               @Valid @RequestBody SeatRequest request) {
+    public SeatResponse update(@PathVariable Long id, @Valid @RequestBody SeatRequest request) {
         return seatService.update(id, request);
     }
 
